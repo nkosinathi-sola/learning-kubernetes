@@ -1,0 +1,39 @@
+# rolling updates - updating instances 1 by 1 to avoid disturbing users of your app
+# safe for rollbacks
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  labels:
+      app: myapp
+      type: front-end
+# defines what's inside the object that we are creating
+# multiple instances of a pod
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        tier: fron-tend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+  selector:
+     matchLabels:
+        type: front-end
+
+# kubectl create -f deployment-definition.yml
+# kubectl get deployments
+
+# the deployment automatically creates a replicaset
+# kubectl get replicaset
+
+# the replicaset automatically creates pods
+# kubectl get pods
+
+# to see all the created objects run
+# kubectl get all
