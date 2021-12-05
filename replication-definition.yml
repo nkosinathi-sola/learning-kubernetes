@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myaap-rc
+  labels:
+      app: myapp
+      type: front-end
+# defines what's inside the object that we are creating
+# multiple instances of a pod
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        tier: fron-tend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+
+# Replication controller | Replica Set
+# Replication controller - Older tech
+# Replica Set - New recommended way to setup replication
+
+# Once the file is ready run the kubectl command to create
+# kubectl create -f replication-definition.yml
+
+# kubectl get replicationcontroller
+
+# kubectl get pods
+# you'll see thre pods running 
+# note that all of them are starting with the name of replication controller
+# indicating that they are created automatically by the  
+
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myaap-replicaset
+  labels:
+      app: myapp
+      type: front-end
+# defines what's inside the object that we are creating
+# multiple instances of a pod
+spec:
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        tier: fron-tend
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx
+  replicas: 3
+  selector:
+     matchLabels:
+        type: front-end
+
+
+# relpicaset requires a selector definition
+# helps replicaset what pods fall under it
+# because it can also manage pods that where not created as part of the replica set creation
+# optional - it assumes it to be the same as labels provided in pod def
+
+# kubectl create -f replication-definition.yml
+# kubectl get replicaset
+# kubectl get pods
