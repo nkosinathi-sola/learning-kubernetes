@@ -69,3 +69,22 @@ spec:
 # kubectl create -f replication-definition.yml
 # kubectl get replicaset
 # kubectl get pods
+
+# to scale:
+# update the yml replicas number to the desired number 
+# kubectl replace -f replication-definition.yml
+# OR
+# use the single commmand
+# kubectl scale --replicas=6 -f replication-definition.yml
+# kubectl scale replicaset --replicas=2 new-replica-set
+
+# to delete
+# kubectl delete replicaset myaap-replicaset 
+# this also deletes underlying pods
+
+# to replace or update the replicaset
+# kubectl replace -f replicaset-definition.yml
+
+# extras
+# kubectl explain replicaset | grep VERSION
+# kubectl create -f /root/replicaset-definition-1.yaml
