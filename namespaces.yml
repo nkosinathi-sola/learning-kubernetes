@@ -1,0 +1,54 @@
+# defult 
+# kube-system - for internal purposes (networking, dns) to asolate from user
+# kube-public - resources made avaliable for all the user
+
+# small environment is fine with defualt namespace
+
+# default [web-pod, db-service, web-deployment]
+# dev [db-service, web-pod]
+
+# for internal communication in default
+# mysql.connect("db-service")
+
+# for connection to dev namespace
+# mysql.connect("db-service.dev.svc.cluster.local")
+
+# when a service is created, a DNS entry is created automatically in this format
+# cluster.local is the default domain name of the k8s cluster
+# svc is the subdomain for service
+# followed by the namespace and 
+# the name of the service itself
+
+# to list namespace
+# kubectl get namespace
+
+# to list pods on another namespace
+# kubectl get pods --namespace=kube-system
+
+# list pods on all the naspace
+# kubectl get pods --all-namespaces
+
+# kubectl config set-context $(kubectl config current-context) --namespace=dev
+# this command first identifies the current context and then sets the namespace to the desired one
+# for that current context
+
+# contexts are used to manage multple clusters and multiple environments from the same management system
+
+# create a pod in the finance namespace
+# kubectl run redis --image=redis -n finance
+
+# ----- Resource Quota-------
+# to limiti resources in a namespace 
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+    name: compute-quota
+    namespace: dev
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "4"
+    requests.memory: 5Gi
+    limits.cpu: "10"
+    limits.memory: 10Gi
