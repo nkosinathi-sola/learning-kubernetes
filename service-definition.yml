@@ -1,0 +1,87 @@
+# enable communication within virious components inside and outside kubernetes
+# helps connect applications together
+# lose coupling in microservices
+
+# service is is an object just like pods,replicasets or deployments
+# node-pod-service : listesns to a pod on the node and forward requests to the pods
+
+# service can help map a port on the node to a port on the pod
+
+
+apiVersion: v1
+kind: Service
+metadata:
+    name: myapp-service
+spec:
+    type: NodePort
+    ports:
+      - targetPort: 80 # this is the port on the POD
+        port: 80 # this is the port on the Service
+        nodePort: 30008 # this is the NodePort
+        # if you dont provide a nodeport it is automatically assigned from a range of (30000 - 32767)
+        
+    # now specify the pod because there can be multiply pods running
+    # pull the labesls from the pod definition file and place under selector section
+    # this links the service to the pod
+    selector:
+        app: myapp
+        type: front-end
+
+
+# create the service using
+# kubectl create -f service-definition.yml    
+
+# to see creted service
+# kubectl get services
+
+# we can now access the web service
+# curl http://192.168.1.2:30008 
+# <Node IP>:<Port>
+
+# in a case where there are many pods with one service
+# you dont need to config extra stuff - kubernetes automatically forwards end requests coming fromthe user
+
+# if pods are distrubeted accross multiple nodes
+# k8s auto creates a service that spans accross all the nodes in cluster and maps the target 
+# port to the same node port on all the nodes in the cluster
+
+# ------------------------------------------------------------------------------------
+
+# Cluster IP
+apiVersion: v1
+kind: service
+metadata:
+    name: back-end
+spec:
+    type: ClusterIP
+    ports:
+      - targetPort: 80 # this is the port on the POD
+        port: 80 # this is the port on the Service
+        
+    # now specify the pod because there can be multiply pods running
+    # pull the labesls from the pod definition file and place under selector section
+    # this links the service to a set of pods
+    selector:
+        app: myapp
+        type: back-end
+# create the service using
+# kubectl create -f service-definition.yml        
+
+# to see creted service
+# kubectl get services
+
+
+
+# ------------------------------------------------------------------------------------
+
+# LoadBalancer - works with cloud providers, eg AWS, GCP, Azure
+apiVersion: v1
+kind: service
+metadata:
+    name: myapp-service
+spec:
+    type: LoadBalancer
+    ports:
+      - targetPort: 80 # this is the port on the POD
+        port: 80 # this is the port on the Service
+        nodePort: 30008 # this is the NodePort
