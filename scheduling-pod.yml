@@ -1,0 +1,63 @@
+# you have a specific application that requires its pods to be placed on nodes after performing some additional checks
+
+# ----------------
+# Custom Scheduler
+
+# the kubeadm tool
+apiVersion: v1
+kind: Pods
+metadata:
+  name: kube-scheduler
+  namespace: kube-system 
+spec:
+  containers: 
+  - command:
+    # associated options to start the scheduler
+    - kube-scheduler
+    - --address=127.0.0.1
+    - --kubeconfig=/etc/kubernetes/scheduler.conf
+    # if you have multiple copies of the scheduler running on different master nodes (only one can be active at a time)
+    # thats where the leader option helps in choosing a leader who will lead scheduling activities
+    # to get multiple schedulers working, set the leader to false
+    - --leader-elect=true
+    # set custom scheduler
+    - --scheduler-name=my-custom-scheduler
+
+    # or you can set a lock option to differentiate the custom from default during a scheduler selection
+    - --lock-object-name=my-custom-scheduler
+
+    image: k8s.gcr.io/kube-scheduler-amd64:v1.11.3
+    name: kube-scheduler
+
+# create scheduler pod
+# > kubectl get pods --namespace=kube-system   
+
+
+
+
+
+
+
+
+
+# the next step is to configure a pod or deployment to use the new scheduler
+# this way when a pod is created, the right scheduler is used for scheduling
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers: 
+  - image: nginx
+    name: nginx
+  schedulerName: my-custom-scheduler
+
+# create pod
+# > kubectl create -f pod-definition.yml 
+
+
+# to know which scheduler is running use:
+# > kubectl get events
+
+# to view the logs of the scheduler
+# > kubectl logs my-custom-scheduler --name-space=kube-system
