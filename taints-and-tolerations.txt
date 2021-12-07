@@ -1,0 +1,51 @@
+Taints and tolerations have nothing to do with security and intrusion on a cluster.
+
+Person and Bug analogy
+______________________
+nodes = person
+pods = bugs
+
+Taints and tolerations are used to set restrictions on what PODs can be scheduled on a node.
+
+Taints are set on Nodes
+Tolerations are set on Pods
+
+
+
+To taint a node
+_______________
+> kubectl taint nodes node-name key=value:taint-effect
+> kubectl taint nodes node1 app=blue:NoSchedule
+
+There are 3 types of taints:
+1. NoSchedule 
+2. PreferNoSchedule - system will try to avoid placing a pod on the node but not guaranteed
+3. NoExecute - new pods will not be scheduled on the node and existing pods (if any) will be evicted if they
+               do not tolerate the taint. Theses pods may have be scheduled on the node before the taint was
+               applied.
+
+
+Tolarations on pods
+____________________
+pull up a pod definition file
+in the spec section add section called tolerations
+use same values while creating the taint
+    tolerations:
+    - key: "app"
+      operator: "Equal"
+      value: "blue"
+      effect: "NoSchedule"
+
+NB: All these values need to be encoded in double quotes      
+
+Taints and tolerations are only meant to restrict node from accepting certain pods
+Taints and tolerations does not tell a pod to go to a particular node
+Instead it tells the node to only accept pods with certain tolerations
+
+If your requirement is to restrict a pod to certain nodes it is acheived through NodeAffinity
+
+
+Extra
+_____
+K8s has a default master tainted node. To see this run
+> kubectl describe node kubemaster | grep Taint
