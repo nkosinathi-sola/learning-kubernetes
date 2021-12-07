@@ -5,6 +5,7 @@ metadata:
   labels:
     app: myapp
     tier: frontend
+    function: Front-end
 spec:
   containers:
   - name: nginx
@@ -21,3 +22,51 @@ spec:
 
 # - Use the kubectl edit command to update the image of the pod to redis.
 # kubectl edit pod redis
+
+
+#-------------------------------------
+# Labels and selectors
+
+# kubectl get pods --selector app=myapp 
+
+# the labels defined under the template selection are the labels for the pods
+# the labels at the top are for the replica set
+
+apiVersion: v1
+kind: ReplicaSet
+metadata:
+  name: simple-webapp
+  # replicaset labels
+  labels:
+    app: App1
+    function: Front-end
+  annotations:
+      buildversion: 1.34  
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: App1
+  template:
+    metadata:
+      # pod labels
+      labels:
+        app: App1
+        function: Front-end
+    spec:
+      containers: 
+      - name: simple-webapp
+        image: simple-webapp
+
+# replicaset labels are used if you configure another object to discover the replicaset        
+# in order to connect the replicaset to the pod we configure the selector field under the replicaset 
+# specification to match the labels defined on the pod
+
+
+# kubectl get all --selector env=prod
+
+# Q : Identify the POD which is part of the prod environment, the finance BU and of frontend tier?
+# A : kubectl get all --selector env=prod,bu=finance,tier=frontend
+
+# kubectl create -f replicaset-definition-1.yml
+# vi replicaset-definition-1.yml
