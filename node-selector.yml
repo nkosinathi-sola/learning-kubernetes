@@ -1,0 +1,24 @@
+apiVersion:
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+  - name: data-processor
+    image: data-processor
+    # to limit this pod to run on a larger node we define selector
+  nodeSelector:
+    # size large will be defined as a label assigned to the node
+    # the scheduler uses these labels to match and identify the size/right node to place the pod on
+    size: Large  
+
+# to label the node
+# kubectl label nodes <node-name> <label-key>=<label-value>
+# > kubectl label nodes node-1 size=Large
+
+# now that we've labelled the node, we can get back to creating the pod
+# kubectl create -f pod-definition.yml
+
+# for more complex situation like placing a pod on Large OR Medium Node
+# Node Affinity is used
+# with nodeSelector you can not provide advanced expressions
