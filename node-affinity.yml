@@ -1,0 +1,56 @@
+# the primary purpose of node affinity is to ensure that PODS are hosted on particular NODES
+# in this case to ensure large data processing POD ends up on the right NODE
+# with nodeSelector you can not provide advanced expressions
+apiVersion:
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+  - name: data-processor
+    image: data-processor
+    # to limit this pod to run on a larger node we define selector
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoreDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: Size
+            operator: In # ensure that the pod will be placed on a node whose label size has any value
+                         # in the list of values specified below
+            values:
+            - Large 
+            - Medium
+
+# you can also use "NotIn" | "Exists"
+# the "Exists" operator will simple check if the label size exits on the node and you dont need the values
+
+# Node Affinity Types
+
+# Available:
+# requiredDuringSchedulingIgnoreDuringExecution
+# preferredDuringSchedulingIgnoreDuringExecution
+
+# Planned:
+# requiredDuringSchedulingRequiredDuringExecution
+
+root@controlplane:~# kubectl get nodes node01 --show-labels
+NAME     STATUS   ROLES    AGE     VERSION   LABELS
+node01   Ready    <none>   6m22s   v1.20.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/arch=amd64,kubernetes.io/hostname=node01,kubernetes.io/os=linux
+root@controlplane:~# kubectl label nodes node01 color=blue
+node/node01 labeled
+root@controlplane:~# kubectl get nodes node01 --show-labels
+NAME     STATUS   ROLES    AGE     VERSION   LABELS
+node01   Ready    <none>   7m26s   v1.20.0   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,color=blue,kubernetes.io/arch=amd64,kubernetes.io/hostname=node01,kubernetes.io/os=linux
+root@controlplane:~# kubectl create deployment blue --image=nginx
+deployment.apps/blue created
+root@controlplane:~# kubectl scale deployment blue --replicas=6
+deployment.apps/blue scaled
+root@controlplane:~# kubectl get nodes -o wide
+NAME           STATUS   ROLES                  AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+controlplane   Ready    control-plane,master   10m   v1.20.0   10.53.139.3   <none>        Ubuntu 18.04.5 LTS   5.4.0-1028-gcp   docker://19.3.0
+node01         Ready    <none>                 10m   v1.20.0   10.53.139.6   <none>        Ubuntu 18.04.5 LTS   5.4.0-1028-gcp   docker://19.3.0
+root@controlplane:~# 
+
+# kubectl get deployments.apps blue -o yaml > blue.yaml
+# vi blue.yaml
