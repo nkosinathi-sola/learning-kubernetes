@@ -28,3 +28,6 @@ kube-system   kube-scheduler-controlplane            1/1     Running   0        
 root@controlplane:~# 
 
 # static pods usually have suffix -master, that how you can identify them
+
+# check folder holding static definition file
+> ps -ef | grep kubelet
