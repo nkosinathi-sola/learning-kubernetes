@@ -1,0 +1,13 @@
+# static pods are created by the kubelet without the intervantion of the Kube apiVersion
+# the files are stored in /etc/kubernetes/manifests (it could be any directory on the host)
+# the location of that dir is passsed as an option while running the service
+# the option is passed as: 
+    --pod-manifest-path=/etc/Kubernetes/manifests
+
+# you can only create pods with this (not replicasets, deployments, services, etc)
+# kubelete works on a pods level thats why it understands this
+
+once static files are created, you can view them using 
+> docker ps 
+# but why docker?
+# because we dont have the rest of the kubernetes cluster so the kubectl utility works with the kube api server
