@@ -1,0 +1,50 @@
+# daemon sets are like replica sets
+# they help deploy multiple instances of pods
+# but they run one copy of your pod on each node on your cluster
+
+# whenever a new node is deployed in your cluster a replica of the pod is auto added to that node
+# when a node is removed, the pod is auto removed
+
+# the daemon ensures that one copy of the pod is always present in all nodes in the cluster
+
+# Usecases:
+  # - Monitoring agent
+  # - Log Viewer
+
+# a monitoring agent can be deployed in the form of a pod and you dont have to worry about adding 
+# or removing these agents where there are changes in your cluster as the daemon will take care of that for you.
+
+#-------------------------
+
+# creating a daemon set is similar to the processs of creating a replica set  
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: monitoring-daemon
+spec:
+  selector:
+    matchLabels:
+      app: monitoring-agent
+  template:
+    metadata:
+      labels:
+        app: monitoring-agent
+    spec:
+      containers:
+      - name: monitoring-agent
+        image: monitoring-agent
+
+# ensure the labels in the selector matches the ones in the pod template    
+
+# once ready create with:
+# > kubectl create -f daemon-set-definition.yml
+# > kubectl get daemonsets
+# > kubectl describe daemonsets monitoring-daemon
+
+# > kubectl get daemonsets --all-namespaces
+
+# An easy way to create a DaemonSet is to first generate a YAML file for a Deployment with the command 
+# > kubectl create deployment elasticsearch --image=k8s.gcr.io/fluentd-elasticsearch:1.20 -n kube-system --dry-run=client -o yaml > fluentd.yaml. 
+# Next, remove the replicas, strategy and status fields from the YAML file using a text editor. 
+# Also, change the kind from Deployment to DaemonSet.
+# Finally, create the Daemonset by running kubectl create -f fluentd.yaml
