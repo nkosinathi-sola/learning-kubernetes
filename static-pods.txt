@@ -31,3 +31,4 @@ root@controlplane:~#
 
 # check folder holding static definition file
 > ps -ef | grep kubelet
+> grep -i static /var/lib/kubelet/config.yaml
