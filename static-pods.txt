@@ -11,3 +11,20 @@ once static files are created, you can view them using
 > docker ps 
 # but why docker?
 # because we dont have the rest of the kubernetes cluster so the kubectl utility works with the kube api server
+
+
+root@controlplane:~# kubectl get pods --all-namespaces
+NAMESPACE     NAME                                   READY   STATUS    RESTARTS   AGE
+kube-system   coredns-74ff55c5b-hmqsx                1/1     Running   0          11m
+kube-system   coredns-74ff55c5b-xccs5                1/1     Running   0          11m
+kube-system   etcd-controlplane                      1/1     Running   0          11m
+kube-system   kube-apiserver-controlplane            1/1     Running   0          11m
+kube-system   kube-controller-manager-controlplane   1/1     Running   0          11m
+kube-system   kube-flannel-ds-78n4f                  1/1     Running   0          11m
+kube-system   kube-flannel-ds-99n5v                  1/1     Running   0          11m
+kube-system   kube-proxy-g6jbx                       1/1     Running   0          11m
+kube-system   kube-proxy-qhzmp                       1/1     Running   0          11m
+kube-system   kube-scheduler-controlplane            1/1     Running   0          11m
+root@controlplane:~# 
+
+# static pods usually have suffix -master, that how you can identify them
