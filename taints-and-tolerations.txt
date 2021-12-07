@@ -49,3 +49,25 @@ Extra
 _____
 K8s has a default master tainted node. To see this run
 > kubectl describe node kubemaster | grep Taint
+
+
+> kubectl taint nodes node01 spray=mortein:NoSchedule
+> kubectl run nginx --image=nginx --name=mosquito
+
+
+
+Q : Create another pod named bee with the nginx image, which has a toleration set to the taint mortein.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bee
+spec:
+  containers:
+  - image: nginx
+    name: bee
+  tolerations:
+  - key: spray
+    value: mortein
+    effect: NoSchedule
+    operator: Equal
