@@ -1,0 +1,26 @@
+# share resources and services, storage volumes
+# to create, add the new container infromation tp the pod definition file
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp 
+spec:
+  containers: 
+  - name: simple-webapp
+    image: simple-webapp
+    porta:
+      - containerPort: 8080
+  # remember - the container section under the spec is an array to allow multiple containers
+  - name: log-agent
+    image: log-agent    
+
+# Multi-container PODs Design Patterns
+# There are 3 common patterns, when it comes to designing multi-container PODs. The first and what 
+# we just saw with the logging service example is known as a side car pattern. The others are the 
+# adapter and the ambassador pattern.
+
+# But these fall under the CKAD curriculum and are not required for the CKA exam. So we will be 
+# discuss these in more detail in the CKAD course.    
