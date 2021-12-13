@@ -1,0 +1,33 @@
+# are used to pass configuaration data in form of key value pair in K8s
+# create them > then inject them into the pod
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_COLOR: blue
+  APP_MODE: prod
+
+# > kubectl create -f config-maps.yml
+# > get configmaps
+# > describe configmaps
+
+# NOW CONFIGURE IT WITH A POD
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+  containers:
+  - name: simple-webapp-color
+    image: simple-webapp-color
+    ports:
+      - containerPort: 8080
+    # enject config map
+    envFrom:
+      - configMapRef:
+        name: app-config
