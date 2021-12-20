@@ -1,0 +1,33 @@
+# >kubeadm upgrade plan
+# the above command gives you detailed information about your cluster upgrade
+
+# in a scenerio upgrading from v1.11
+# upgrade kubeadm
+apt-get upgrade -y kubeadm=1.12.0-00
+kubeadm upgrade apply v1.12.0
+
+# upgrade kubelets next
+apt-get upgrade -y kubelet=1.12.0-00
+systemctl restart kubelet
+
+
+# Upgrade worker nodes
+# ____________________
+
+# move the workloads first from the first worker node to the other nodes
+# use the drain command to safely terminate all the pods from a node  and reschedule them on the other nodes
+kubectl drain node-1
+# it also cordons the node and marks it unschedulable, that way no new pods are scheduled on it.
+# then upgrade the kubeadm and kubelet packages on the worker nodes as done first on the master
+apt-get upgrade -y kubeadm=1.12.0-00
+apt-get upgrade -y kubelet=1.12.0-00
+kubeadm upgrade node config --kubelet-version v1.12.0 # upgrade the node configuration
+systemctl restart kubelet # restart the kubelet service
+# the node should be up 
+
+# NB: when we drained the node, we marked it unschedulable, so we need to unmark it
+kubectl uncordoon node-1
+
+# the node is now schedulable
+# but remember that its is not neccessary that the pods come right back to this node - it is only marked schedulable
+# only when the pods are deleted from the other nodes or when new nodes are scheduled, do they really come back to this node
