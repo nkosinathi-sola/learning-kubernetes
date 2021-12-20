@@ -1,0 +1,48 @@
+# the easy approach is to stick to a source code management system like Github, GitLab
+
+# another approach will be to query the aip server and store the outputs in a yml file
+kubectl get all --all-namespaces -o yaml > all-deploy-services.yaml
+
+# tools like VELERO can help you take backups of your K8S cluster using the K8S API
+
+
+
+
+# you can also choose to backup the ETCD cluster itsself
+# ETCD comes with a built in snapshot
+# you can take a snapshot of an etcd databse
+
+ETCDCTL_API=3 etcdctl \
+      snapshot save snapshot.db # takes a snapshot
+
+ETCDCTL_API=3 etcdctl \
+      snapshot status snapshot.db # view the snapshot   
+
+
+
+# to restore a cluster from this backup
+service kube-apiserver stop # stop the kube aip server service
+
+ETCDCTL_API=3 etcdctl \
+      snapshot restore snapshot.db \ # run restore command
+      --data-dir /var/lib/etcd-from-backup # specifiy path with the backup
+
+systemctl daemon-reload
+
+service etcd restart
+
+
+# to check the version on etcd runnning on the cluster - inspect the etcd pod
+# etcd is deployed as a pod and it should be in the kubesystem namespace
+kubectl get pods -n kube-system
+kubectl -n kube-system describe pod etcd-controlplane
+
+
+
+
+# REFS:
+# https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+
+# https://github.com/etcd-io/website/blob/main/content/en/docs/v3.5/op-guide/recovery.md
+
+# https://www.youtube.com/watch?v=qRPNuT080Hk
